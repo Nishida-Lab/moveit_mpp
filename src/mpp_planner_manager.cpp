@@ -109,11 +109,6 @@ PlannerStruct resolve_planner(const std::string& planner_str)
 
 
 
-
-
-
-
-
 MultiPlannerPluginManager::MultiPlannerPluginManager() :
   planning_interface::PlannerManager(), pnh_(PARAMETER_NS)
 {
@@ -147,10 +142,9 @@ bool MultiPlannerPluginManager::initialize(const robot_model::RobotModelConstPtr
   std::map<std::string, std::string> planners_to_load =
   {
     {"ompl", "ompl_interface/OMPLPlanner"},
-    {"ptp" , "moveit_ptp/PtpPlannerManager"},
-    // {"clik", "constrained_ik/CLIKPlanner"}
+    {"stomp" , "stomp_moveit/StompPlannerManager"},
+    {"chomp" , "chomp_interface/CHOMPPlanner"},
   };
-
 
   for (auto const& planner_info : planners_to_load)
   {
@@ -163,8 +157,9 @@ bool MultiPlannerPluginManager::initialize(const robot_model::RobotModelConstPtr
     try
     {
       auto p = planner_plugin_loader_->createInstance(planner_id);
-      p->initialize(model, ns + "/" + planner_ns);
-      planners_[planner_ns] = p;
+      p->initialize(model, ns + "/");
+      std::shared_ptr< planning_interface::PlannerManager > s = std::shared_ptr< planning_interface::PlannerManager>( p.get(), [p] ( ... ) mutable { } );
+      planners_[planner_ns] = s;
     }
     catch (pluginlib::PluginlibException& ex)
     {
