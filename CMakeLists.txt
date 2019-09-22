@@ -4,10 +4,8 @@ project(moveit_mpp)
 
 add_compile_options(-std=c++11)
 
-find_package(
-  catkin
-    REQUIRED
-  COMPONENTS
+
+find_package(catkin REQUIRED COMPONENTS
     moveit_core
     moveit_ros_planning
     pluginlib
@@ -16,10 +14,8 @@ find_package(
 
 
 catkin_package(
-  INCLUDE_DIRS
-    include
-  LIBRARIES
-    ${PROJECT_NAME}
+  INCLUDE_DIRS include
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS
     moveit_core
     moveit_ros_planning
@@ -35,3 +31,25 @@ include_directories(
 
 add_library(${PROJECT_NAME}_planner_manager src/mpp_planner_manager.cpp)
 target_link_libraries(${PROJECT_NAME}_planner_manager ${catkin_LIBRARIES})
+
+
+#############
+## Install ##
+#############
+
+install(TARGETS ${PROJECT_NAME}_planner_manager
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/
+  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+)
+
+install(FILES mpp_plugin_description.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+
+
